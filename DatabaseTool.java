@@ -6,12 +6,12 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel; 
 
 /**
- * Do database-related events with this class.
+ * Do database-related events with this class tool.
  * @author Arnesfield
  */
-public final class WithDatabase {
+public final class DatabaseTool {
     
-    private WithDatabase() {}
+    private DatabaseTool() {}
     
     private static String URL = null;
     private static String CLASS_NAME = null;
