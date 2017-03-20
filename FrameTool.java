@@ -281,9 +281,7 @@ public final class FrameTool {
             }
             else generateDays( (month.getSelectedIndex() % 2 == 0) ? 31 : 30 );
 
-            day.setSelectedIndex(
-                (selectedDay > day.getItemCount()-1) ? day.getItemCount()-1 : selectedDay
-            );
+            day.setSelectedIndex( (selectedDay > day.getItemCount()-1) ? day.getItemCount()-1 : selectedDay );
         }
     }
     
