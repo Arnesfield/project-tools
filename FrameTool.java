@@ -50,7 +50,7 @@ public final class FrameTool {
     /**
      * Displays a popup.
      * @param parent the current JFrame or parent frame
-     * @param popup the JPanel object that implements the PopupInterface
+     * @param popup the JPanel object that implements the PopupTool
      * @param title the title of the popup JDialog
      */
     public static final void popup(JFrame parent, JPanel popup, String title) {
@@ -59,7 +59,7 @@ public final class FrameTool {
         dialog.setModal(true);
         
         // action listener : disposes JDialog
-        for (JButton btn : ((InterfacePopup)popup).getDisposeButtons()) {
+        for (JButton btn : ((PopupTool)popup).getDisposeButtons()) {
             try {
                 btn.addActionListener((ActionEvent e) -> {
                     dialog.dispose();
@@ -68,8 +68,8 @@ public final class FrameTool {
         }
 
         // action listener : disposes JDialog and parent frame
-        if ( ((InterfacePopup)popup).getDisposeButtonsRemoveParent() != null ) {
-            for (JButton btn : ((InterfacePopup)popup).getDisposeButtonsRemoveParent()) {
+        if ( ((PopupTool)popup).getDisposeButtonsRemoveParent() != null ) {
+            for (JButton btn : ((PopupTool)popup).getDisposeButtonsRemoveParent()) {
                 try {
                     btn.addActionListener((ActionEvent e) -> {
                         dialog.dispose();
