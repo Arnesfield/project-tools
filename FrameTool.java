@@ -1,6 +1,7 @@
 package tools;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DateFormatSymbols;
@@ -159,6 +160,14 @@ public final class FrameTool {
         private final JComboBox month;
         private final JComboBox day;
         private final JComboBox year;
+        private final DateBoxListener dateBoxListener;
+        
+        private final class DateBoxListener implements ActionListener {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                groupAction();
+            }
+        }
 
         /**
          * DateBox class to manipulate combo boxes used for dates.
@@ -167,10 +176,13 @@ public final class FrameTool {
          * @param day combo box of day
          * @param year combo box of year
          */
-        public DateBox(JComboBox month, JComboBox day, JComboBox year) {
+        private DateBox(JComboBox month, JComboBox day, JComboBox year) {
             this.month = month;
             this.day = day;
             this.year = year;
+            this.dateBoxListener = new DateBoxListener();
+            
+            setBoxDate();
         }
         
         /**
@@ -221,6 +233,9 @@ public final class FrameTool {
          * Sets combo boxes as dates.
          */
         private void setBoxDate() {
+            month.removeActionListener(dateBoxListener);
+            year.removeActionListener(dateBoxListener);
+            
             month.removeAllItems();
             day.removeAllItems();
             year.removeAllItems();
@@ -229,12 +244,8 @@ public final class FrameTool {
             day.addItem(displayDay);
             year.addItem(displayYear);
 
-            month.addActionListener((ActionEvent e) -> {
-                groupAction();
-            });
-            year.addActionListener((ActionEvent e) -> {
-                groupAction();
-            });
+            month.addActionListener(dateBoxListener);
+            year.addActionListener(dateBoxListener);
             
             // add months
             if (wordedMonth)
