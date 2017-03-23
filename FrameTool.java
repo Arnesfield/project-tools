@@ -151,24 +151,28 @@ public final class FrameTool {
      * DateBox class to manipulate combo boxes used for dates.
      */
     public static final class DateBox {
-        private String displayMonth = "Month";
-        private String displayDay = "Day";
-        private String displayYear = "Year";
-        private boolean wordedMonth = false;
-        private int yearStart = 0;
-        private int yearEnd = 0;
+        private String displayMonth;
+        private String displayDay;
+        private String displayYear;
+        private boolean wordedMonth;
+        private boolean asc;
+        private int yearStart;
+        private int yearEnd;
         private final JComboBox month;
         private final JComboBox day;
         private final JComboBox year;
         private final DateBoxListener dateBoxListener;
         
+        /**
+         * DateBoxListener performs the action on date combo boxes.
+         */
         private final class DateBoxListener implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 groupAction();
             }
         }
-
+        
         /**
          * DateBox class to manipulate combo boxes used for dates.
          * Remember to setProperties() of this object.
@@ -177,6 +181,14 @@ public final class FrameTool {
          * @param year combo box of year
          */
         private DateBox(JComboBox month, JComboBox day, JComboBox year) {
+            this.asc = false;
+            this.yearEnd = 0;
+            this.yearStart = 0;
+            this.displayYear = "Year";
+            this.displayDay = "Day";
+            this.displayMonth = "Month";
+            this.wordedMonth = false;
+            
             this.month = month;
             this.day = day;
             this.year = year;
@@ -187,11 +199,39 @@ public final class FrameTool {
         
         /**
          * Overwrite default properties of the combo box date group.
-         * @param wordedMonth is true if months are words; false if digits
-         * @param yearStart year now - this
-         * @param yearEnd year now + this
+         * @param yearStart current year - yearStart
+         * @param yearEnd current year + yearEnd
+         */
+        public final void setProperties(int yearStart, int yearEnd) {
+            this.yearStart = yearStart;
+            this.yearEnd = yearEnd;
+            
+            setBoxDate();
+        }
+        
+        /**
+         * Overwrite default properties of the combo box date group.
+         * @param wordedMonth true if months are words; otherwise, false if digits
+         * @param yearStart current year - yearStart
+         * @param yearEnd current year + yearEnd
          */
         public final void setProperties(boolean wordedMonth, int yearStart, int yearEnd) {
+            this.wordedMonth = wordedMonth;
+            this.yearStart = yearStart;
+            this.yearEnd = yearEnd;
+            
+            setBoxDate();
+        }
+        
+        /**
+         * Overwrite default properties of the combo box date group.
+         * @param asc true if years are shown in ascending order; otherwise, false for descending order
+         * @param wordedMonth true if months are words; otherwise, false if digits
+         * @param yearStart current year - yearStart
+         * @param yearEnd current year + yearEnd
+         */
+        public final void setProperties(boolean asc, boolean wordedMonth, int yearStart, int yearEnd) {
+            this.asc = asc;
             this.wordedMonth = wordedMonth;
             this.yearStart = yearStart;
             this.yearEnd = yearEnd;
@@ -204,14 +244,16 @@ public final class FrameTool {
          * @param month first selected item for the month combo box
          * @param day first selected item for the day combo box
          * @param year first selected item for the year combo box
-         * @param wordedMonth is true if months are words; false if digits
-         * @param yearStart year now - this
-         * @param yearEnd year now + this
+         * @param asc true if years are shown in ascending order; otherwise, false for descending order
+         * @param wordedMonth true if months are words; otherwise, false if digits
+         * @param yearStart current year - yearStart
+         * @param yearEnd current year + yearEnd
          */
-        public final void setProperties(String month, String day, String year, boolean wordedMonth, int yearStart, int yearEnd) {
+        public final void setProperties(String month, String day, String year, boolean asc, boolean wordedMonth, int yearStart, int yearEnd) {
             this.displayMonth = month;
             this.displayDay = day;
             this.displayYear = year;
+            this.asc = asc;
             this.wordedMonth = wordedMonth;
             this.yearStart = yearStart;
             this.yearEnd = yearEnd;
@@ -263,7 +305,7 @@ public final class FrameTool {
             // add years
             int yr = Calendar.getInstance().get(Calendar.YEAR);
             for (int i = yearStart; i <= yearEnd; i++)
-                year.addItem( String.valueOf(yr+i) );
+                year.addItem( String.valueOf(yr + ((asc) ? i : -i)) );
         }
         
         /**
