@@ -1,5 +1,6 @@
 package tools;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -54,10 +55,8 @@ public final class FrameTool {
      * @param popup the JPanel object that implements the PopupTool
      * @param title the title of the popup JDialog
      */
-    public static final void popup(JFrame parent, JPanel popup, String title) {
+    public static final void popup(Component parent, JPanel popup, String title) {
         final JDialog dialog = new JDialog();
-        dialog.setTitle(title);
-        dialog.setModal(true);
         
         // action listener : disposes JDialog
         for (JButton btn : ((PopupTool)popup).getDisposeButtons()) {
@@ -76,8 +75,12 @@ public final class FrameTool {
                         dialog.dispose();
                         // remove parent
                         try {
-                            parent.dispose();
-                        } catch (Exception ex) {}
+                            ((JFrame)parent).dispose();
+                        } catch (Exception ex) {
+                            try {
+                                ((JDialog)parent).dispose();
+                            } catch (Exception ex2) {}
+                        }
                     });
                 } catch (Exception e) {}
             }
@@ -87,6 +90,8 @@ public final class FrameTool {
         dialog.setContentPane(popup);
         
         // properties of JDialog
+        dialog.setTitle(title);
+        dialog.setModalityType(JDialog.DEFAULT_MODALITY_TYPE);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.pack();
         dialog.setLocationRelativeTo(null);
@@ -129,7 +134,7 @@ public final class FrameTool {
     
     /**
      * Displays a JOptionPane error message.
-     * @param message message to be appended to the default messaage
+     * @param message message to be appended to the default message
      * @param title title of JOptionPane
      */
     public static final void error(String message, String title) {
@@ -155,6 +160,7 @@ public final class FrameTool {
         private String displayDay;
         private String displayYear;
         private boolean wordedMonth;
+        private boolean shortMonth;
         private boolean asc;
         private int yearStart;
         private int yearEnd;
@@ -188,6 +194,7 @@ public final class FrameTool {
             this.displayDay = "Day";
             this.displayMonth = "Month";
             this.wordedMonth = false;
+            this.shortMonth = false;
             
             this.month = month;
             this.day = day;
@@ -212,11 +219,13 @@ public final class FrameTool {
         /**
          * Overwrite default properties of the combo box date group.
          * @param wordedMonth true if months are words; otherwise, false if digits
+         * @param shortMonth true if short month strings are to be displayed; otherwise, false
          * @param yearStart current year - yearStart
          * @param yearEnd current year + yearEnd
          */
-        public final void setProperties(boolean wordedMonth, int yearStart, int yearEnd) {
+        public final void setProperties(boolean wordedMonth, boolean shortMonth, int yearStart, int yearEnd) {
             this.wordedMonth = wordedMonth;
+            this.shortMonth = shortMonth;
             this.yearStart = yearStart;
             this.yearEnd = yearEnd;
             
@@ -227,12 +236,14 @@ public final class FrameTool {
          * Overwrite default properties of the combo box date group.
          * @param asc true if years are shown in ascending order; otherwise, false for descending order
          * @param wordedMonth true if months are words; otherwise, false if digits
+         * @param shortMonth true if short month strings are to be displayed; otherwise, false
          * @param yearStart current year - yearStart
          * @param yearEnd current year + yearEnd
          */
-        public final void setProperties(boolean asc, boolean wordedMonth, int yearStart, int yearEnd) {
+        public final void setProperties(boolean asc, boolean wordedMonth, boolean shortMonth, int yearStart, int yearEnd) {
             this.asc = asc;
             this.wordedMonth = wordedMonth;
+            this.shortMonth = shortMonth;
             this.yearStart = yearStart;
             this.yearEnd = yearEnd;
             
@@ -246,15 +257,17 @@ public final class FrameTool {
          * @param year first selected item for the year combo box
          * @param asc true if years are shown in ascending order; otherwise, false for descending order
          * @param wordedMonth true if months are words; otherwise, false if digits
+         * @param shortMonth true if short month strings are to be displayed; otherwise, false
          * @param yearStart current year - yearStart
          * @param yearEnd current year + yearEnd
          */
-        public final void setProperties(String month, String day, String year, boolean asc, boolean wordedMonth, int yearStart, int yearEnd) {
+        public final void setProperties(String month, String day, String year, boolean asc, boolean wordedMonth, boolean shortMonth, int yearStart, int yearEnd) {
             this.displayMonth = month;
             this.displayDay = day;
             this.displayYear = year;
             this.asc = asc;
             this.wordedMonth = wordedMonth;
+            this.shortMonth = shortMonth;
             this.yearStart = yearStart;
             this.yearEnd = yearEnd;
             
@@ -291,7 +304,8 @@ public final class FrameTool {
             
             // add months
             if (wordedMonth)
-                for (String m : new DateFormatSymbols().getMonths()) {
+                for (String m : (shortMonth) ? new DateFormatSymbols().getShortMonths()
+                        : new DateFormatSymbols().getMonths()) {
                     if (!m.isEmpty()) month.addItem(m);
                 }
             else
